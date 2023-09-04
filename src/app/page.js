@@ -1,95 +1,52 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client"; // This is a client component
+import Head from 'next/head';
+import "../flow/config";
+import { useState, useEffect } from "react";
+import * as fcl from "@onflow/fcl";
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
+
+  const [user, setUser] = useState({loggedIn: null})
+	// sets default value of loggedIn to null
+
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
+	// uses FCL to subscribe the user that logs in or signs up
+
+  const AuthedState = () => {
+    // function updates the user variable as true or false based on whether a user is logged in or not. 
+
+    return (
+	// generates a log out button if loggedIn is true
+      <div>
+        <div>Address: {user?.addr ?? "No Address"}</div>
+        <button onClick={fcl.unauthenticate}>Log Out</button>
+          </div>
+        )
+      }
+
+      const UnauthenticatedState = () => {
+        return (
+	// displays default app settings when loggedIn is null
+          <div>
+            <button onClick={fcl.logIn}>Log In</button>
+            <button onClick={fcl.signUp}>Sign Up</button>
+          </div>
+        )
+      }
+
+
+      return (
         <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+          <Head>
+            <title>FCL Quickstart with NextJS</title>
+            <meta name="description" content="My first web3 app on Flow!" />
+            <link rel="icon" href="/favicon.png" />
+          </Head>
+          <h1>Flow App</h1>
+          {user.loggedIn
+            ? <AuthedState />
+            : <UnauthenticatedState />
+          }
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+      );
+    }
